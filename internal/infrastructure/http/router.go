@@ -19,6 +19,7 @@ func Setup(urlHandler *handlers.URLHandler) http.Handler {
 	// Add routes
 	mux.HandleFunc("POST /api/v1/urls", urlHandler.ShortenURL)
 	mux.HandleFunc("GET /{short}", urlHandler.RedirectURL)
+	mux.HandleFunc("GET /api/v1/urls/{short}", urlHandler.GetURLDetails)
 
 	// Apply middleware chain
 	return chain.Then(mux)

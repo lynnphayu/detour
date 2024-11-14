@@ -1,6 +1,7 @@
 package url
 
 import (
+	"detour/internal/domain/hit"
 	"errors"
 	"time"
 )
@@ -11,11 +12,12 @@ var (
 )
 
 type URL struct {
-	ID        string
-	Original  string
-	Short     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        int        `json:"id"`
+	Original  string     `json:"original"`
+	Short     string     `json:"short"`
+	Hits      []*hit.Hit `json:"hits"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
 }
 
 func NewURL(original string) (*URL, error) {

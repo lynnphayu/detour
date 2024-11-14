@@ -2,7 +2,7 @@ package queries
 
 const (
 	CreateURL = `
-        INSERT INTO url (
+        INSERT INTO urls (
             original_url,
             short_url,
             created_at,
@@ -17,19 +17,11 @@ const (
             short_url,
             created_at,
             updated_at
-        FROM url 
+        FROM urls
         WHERE short_url = ?
     `
 
-	CreateHit = `
-        INSERT INTO hit (
-            url_id, 
-            ip,
-            hit_at
-        ) VALUES (?, ?, NOW())
-    `
-
 	FindURLByID = `
-		SELECT * FROM url WHERE id = ?
+		SELECT * FROM urls WHERE id = ?
 	`
 )

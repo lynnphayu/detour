@@ -2,6 +2,7 @@ package main
 
 import (
 	"detour/internal/application/shortener"
+	"detour/internal/domain/hit"
 	"detour/internal/domain/url"
 	"detour/internal/infrastructure/config"
 	"detour/internal/infrastructure/http"
@@ -30,9 +31,11 @@ func main() {
 		log.Fatalf("Failed to initialize MySQL client: %v", err)
 	}
 
-	repo := repositories.NewURLRepo(mysqlClient.DB())
-	service := url.NewService(repo)
-	shortenerUseCase := shortener.NewUseCase(service)
+	urlRepo := repositories.NewURLRepo(mysqlClient.DB())
+	hitRepo := repositories.NewHitRepo(mysqlClient.DB())
+	urlService := url.NewService(urlRepo)
+	hitService := hit.NewService(hitRepo)
+	shortenerUseCase := shortener.NewUseCase(urlService, hitService)
 	urlHandler := handlers.NewURLHandler(shortenerUseCase)
 	router := http.Setup(urlHandler)
 

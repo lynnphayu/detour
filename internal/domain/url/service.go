@@ -40,6 +40,6 @@ func generateShortURL() string {
 	return base64.URLEncoding.EncodeToString(b)[:8]
 }
 
-func (s *Service) IncrementHits(ctx context.Context, urlID string, ip string) error {
+func (s *Service) IncrementHits(ctx context.Context, urlID int, ip string) error {
 	return s.repo.CreateHit(ctx, urlID, ip)
 }

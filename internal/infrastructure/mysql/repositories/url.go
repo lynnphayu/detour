@@ -35,7 +35,7 @@ func (r *URLRepository) Save(ctx context.Context, url *url.URL) error {
 		return fmt.Errorf("error getting last insert ID: %w", err)
 	}
 
-	url.ID = fmt.Sprintf("%d", id)
+	url.ID = int(id)
 	return nil
 }
 
@@ -59,7 +59,7 @@ func (r *URLRepository) FindByShort(ctx context.Context, shortURL string) (*url.
 	return &u, nil
 }
 
-func (r *URLRepository) CreateHit(ctx context.Context, urlID string, ip string) error {
+func (r *URLRepository) CreateHit(ctx context.Context, urlID int, ip string) error {
 
 	_, err := r.db.ExecContext(ctx, queries.CreateHit, urlID, ip)
 	if err != nil {
@@ -69,7 +69,7 @@ func (r *URLRepository) CreateHit(ctx context.Context, urlID string, ip string) 
 	return nil
 }
 
-func (r *URLRepository) FindByID(ctx context.Context, id string) (*url.URL, error) {
+func (r *URLRepository) FindByID(ctx context.Context, id int) (*url.URL, error) {
 	var u url.URL
 	err := r.db.QueryRowContext(ctx, queries.FindURLByID, id).Scan(
 		&u.ID,

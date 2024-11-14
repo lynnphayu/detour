@@ -38,7 +38,7 @@ func Load() (*Config, error) {
 			Port:     getEnv("MYSQL_PORT", "3306"),
 			User:     getEnv("MYSQL_USER", "root"),
 			Password: getEnv("MYSQL_PASSWORD", ""),
-			Database: getEnv("MYSQL_DATABASE", "shortcut"),
+			Database: getEnv("MYSQL_DATABASE", "detour"),
 		},
 	}, nil
 }
