@@ -31,6 +31,7 @@ func main() {
 	urlHandler := handlers.NewURLHandler(shortenerUseCase)
 
 	router := http.Setup(urlHandler)
+
 	server := http.NewServer(http.ServerConfig{
 		Port:           "8080",
 		ReadTimeout:    10 * time.Second,

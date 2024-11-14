@@ -1,13 +1,15 @@
 package http
 
 import (
-	"context"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Server struct {
-	httpServer *http.Server
+	engine *gin.Engine
+	cfg    ServerConfig
 }
 
 type ServerConfig struct {
@@ -18,21 +20,16 @@ type ServerConfig struct {
 }
 
 func NewServer(cfg ServerConfig, handler http.Handler) *Server {
+	server := gin.Default()
+	// server.Use(gin.Recovery())
+	// server.Use(gin.Logger())
+	server.Any("/*any", gin.WrapH(handler))
 	return &Server{
-		httpServer: &http.Server{
-			Addr:         ":" + cfg.Port,
-			Handler:      handler,
-			ReadTimeout:  cfg.ReadTimeout,
-			WriteTimeout: cfg.WriteTimeout,
-			IdleTimeout:  120 * time.Second,
-		},
+		engine: server,
+		cfg:    cfg,
 	}
 }
 
 func (s *Server) Start() error {
-	return s.httpServer.ListenAndServe()
-}
-
-func (s *Server) Shutdown(ctx context.Context) error {
-	return s.httpServer.Shutdown(ctx)
+	return s.engine.Run(":" + s.cfg.Port)
 }
