@@ -63,3 +63,11 @@ func (uc *UseCase) GetUrlToRedirect(ctx context.Context, shortURL string, header
 		OriginalURL: url.Original,
 	}, nil
 }
+
+func (uc *UseCase) UpdateShortURL(ctx context.Context, shortURL string, originalURL string) (*url.URL, error) {
+	url, err := uc.urlService.GenerateNewVersion(ctx, shortURL, originalURL)
+	if err != nil {
+		return nil, err
+	}
+	return url, nil
+}

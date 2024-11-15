@@ -18,35 +18,44 @@ func NewURLRepo(db *sql.DB) *URLRepository {
 	}
 }
 
-func (r *URLRepository) Save(ctx context.Context, url *url.URL) error {
+func (r *URLRepository) Save(ctx context.Context, url *url.URL) (*url.URL, error) {
 	result, err := r.db.ExecContext(ctx, queries.CreateURL,
 		url.Original,
 		url.Short,
+		url.Version,
 		url.CreatedAt,
-		url.UpdatedAt,
 	)
 
 	if err != nil {
-		return fmt.Errorf("error saving URL: %w", err)
+		return nil, fmt.Errorf("error saving URL: %w", err)
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		return fmt.Errorf("error getting last insert ID: %w", err)
+		return nil, fmt.Errorf("error getting last insert ID: %w", err)
 	}
 
 	url.ID = int(id)
-	return nil
+	return url, nil
 }
 
-func (r *URLRepository) FindByShort(ctx context.Context, shortURL string) (*url.URL, error) {
+func (r *URLRepository) FindMaxVersion(ctx context.Context, shortURL string) (int, error) {
+	var version int
+	err := r.db.QueryRowContext(ctx, queries.FindMaxVersion, shortURL).Scan(&version)
+	if err == sql.ErrNoRows {
+		return 0, nil
+	}
+	return version, nil
+}
+
+func (r *URLRepository) FindLatestByShort(ctx context.Context, shortURL string) (*url.URL, error) {
 	var u url.URL
-	err := r.db.QueryRowContext(ctx, queries.FindURLByShort, shortURL).Scan(
+	err := r.db.QueryRowContext(ctx, queries.FindLatestURLByShort, shortURL).Scan(
 		&u.ID,
 		&u.Original,
 		&u.Short,
+		&u.Version,
 		&u.CreatedAt,
-		&u.UpdatedAt,
 	)
 
 	if err == sql.ErrNoRows {
@@ -76,7 +85,6 @@ func (r *URLRepository) FindByID(ctx context.Context, id int) (*url.URL, error) 
 		&u.Original,
 		&u.Short,
 		&u.CreatedAt,
-		&u.UpdatedAt,
 	)
 	if err == sql.ErrNoRows {
 		return nil, url.ErrNotFound

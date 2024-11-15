@@ -16,22 +16,40 @@ func NewService(repo Repository) *Service {
 	}
 }
 
+func (s *Service) GenerateNewVersion(ctx context.Context, shortURL string, originalURL string) (*URL, error) {
+	maxVersion, err := s.repo.FindMaxVersion(ctx, shortURL)
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := NewURL(originalURL)
+	if err != nil {
+		return nil, err
+	}
+	(*url).Short = shortURL
+	(*url).Version = maxVersion + 1
+	url, err = s.repo.Save(ctx, url)
+	if err != nil {
+		return nil, err
+	}
+
+	return url, nil
+}
+
 func (s *Service) CreateShortURL(ctx context.Context, originalURL string) (*URL, error) {
 	url, err := NewURL(originalURL)
 	if err != nil {
 		return nil, err
 	}
-
-	url.Short = generateShortURL()
-
-	if err := s.repo.Save(ctx, url); err != nil {
+	url, err = s.repo.Save(ctx, url)
+	if err != nil {
 		return nil, err
 	}
 	return url, nil
 }
 
 func (s *Service) GetByShortURL(ctx context.Context, shortURL string) (*URL, error) {
-	return s.repo.FindByShort(ctx, shortURL)
+	return s.repo.FindLatestByShort(ctx, shortURL)
 }
 
 func generateShortURL() string {

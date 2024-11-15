@@ -15,9 +15,9 @@ type URL struct {
 	ID        int        `json:"id"`
 	Original  string     `json:"original"`
 	Short     string     `json:"short"`
+	Version   int        `json:"version"`
 	Hits      []*hit.Hit `json:"hits"`
 	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
 }
 
 func NewURL(original string) (*URL, error) {
@@ -27,7 +27,7 @@ func NewURL(original string) (*URL, error) {
 
 	return &URL{
 		Original:  original,
+		Short:     generateShortURL(),
 		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
 	}, nil
 }

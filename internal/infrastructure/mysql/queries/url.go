@@ -5,23 +5,29 @@ const (
         INSERT INTO urls (
             original_url,
             short_url,
-            created_at,
-            updated_at
+            version,
+            created_at
         ) VALUES (?, ?, ?, ?)
     `
 
-	FindURLByShort = `
+	FindLatestURLByShort = `
         SELECT 
             id,
             original_url,
             short_url,
-            created_at,
-            updated_at
+            version,
+            created_at
         FROM urls
         WHERE short_url = ?
+        ORDER BY version DESC
+        LIMIT 1
     `
 
 	FindURLByID = `
 		SELECT * FROM urls WHERE id = ?
+	`
+
+	FindMaxVersion = `
+		SELECT MAX(version) FROM urls WHERE short_url = ?
 	`
 )

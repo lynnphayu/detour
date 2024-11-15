@@ -8,3 +8,6 @@ go.sum
 .vscode/
 
 .env
+
+tmp/
+

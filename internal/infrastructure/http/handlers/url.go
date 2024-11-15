@@ -74,3 +74,25 @@ func (h *URLHandler) RedirectURL(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, url.OriginalURL, http.StatusTemporaryRedirect)
 }
+
+func (h *URLHandler) UpdateShortURL(w http.ResponseWriter, r *http.Request) {
+	shortURL := r.PathValue("short")
+	if shortURL == "" {
+		response.Error(w, http.StatusBadRequest, "INVALID_REQUEST", "Short URL is required")
+		return
+	}
+
+	var req shortener.CreateURLDTO
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.Error(w, http.StatusBadRequest, "INVALID_REQUEST", "Invalid request body")
+		return
+	}
+
+	url, err := h.urlUseCase.UpdateShortURL(r.Context(), shortURL, req.OriginalURL)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "UPDATE_FAILED", err.Error())
+		return
+	}
+
+	response.JSON(w, http.StatusOK, url)
+}
